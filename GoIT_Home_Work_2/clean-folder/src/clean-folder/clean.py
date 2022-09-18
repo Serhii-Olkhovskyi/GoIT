@@ -2,10 +2,19 @@ from pathlib import Path
 import shutil
 import sys
 
+list_doc = ['.doc', '.docx', '.txt', '.pdf', '.xlsx', '.pptx']
+list_image = ['.jpeg', '.png', '.jpg', '.svg', '.JPG']
+list_music = ['.mp3', '.ogg', '.wav', '.amr']
+list_video = ['.avi', '.mp4', '.mov', '.mkv']
+list_zip = ['.zip', '.gz', '.tar']
+list_other = list_doc + list_image + list_music + list_video + list_zip
+list_name_folder = ['Documents', 'Images', 'Musics', 'Videos', 'Archives', 'Others']
+
 
 def file_remove(file_ob):  # Разбрасываем файлы по папкам
+    way_console = Path(main())
     if file_ob.suffix in list_zip:
-        files_unpack(file_ob)
+        files_unpack(way_console, file_ob)
     elif file_ob.suffix in list_doc:
         new_folder = way_console.joinpath(list_name_folder[0])
         try:
@@ -38,7 +47,7 @@ def file_remove(file_ob):  # Разбрасываем файлы по папка
             file_ob.replace(file_ob)
 
 
-def files_unpack(file_ob):  # Распаковка архива
+def files_unpack(way_console, file_ob):  # Распаковка архива
     folder_archive = way_console.joinpath(list_name_folder[4])
     shutil.unpack_archive(file_ob, folder_archive)
     file_ob.unlink()
@@ -106,7 +115,10 @@ def list_of_files(way_consoles):
 
 
 def main():  # считываем путь к папке с консоли
-    return sys.argv[1]
+    try:
+        return sys.argv[1]
+    except IndexError:  # Ошибку IndexError (аргументы не передали) "переводим" в
+        return 'qwerty'  # неправильный путь и в дальнейшем выводим сообщение что "Введен неверный путь к папке"
 
 
 def new_folders(name_folder, way_consoles):  # Функция создает папки если их нет
@@ -145,29 +157,26 @@ def normalize(way_consoles):  # Функция по переименовыван
             element.replace(element.parent / new_file)
 
 
-def parsing(way_consoles):  # Рекурсивно проходимся по папкам и передаем файлы в функцию file_remove
-    for file_ob in way_consoles.glob('*'):
+def parsing(way_console):  # Рекурсивно проходимся по папкам и передаем файлы в функцию file_remove
+    for file_ob in way_console.glob('*'):
         if file_ob.is_file():
             file_remove(file_ob)
         elif file_ob.is_dir():
             parsing(file_ob)
 
 
-if __name__ == '__main__':
-    print('----------------------START----------------------')
-    list_doc = ['.doc', '.docx', '.txt', '.pdf', '.xlsx', '.pptx']
-    list_image = ['.jpeg', '.png', '.jpg', '.svg', '.JPG']
-    list_music = ['.mp3', '.ogg', '.wav', '.amr']
-    list_video = ['.avi', '.mp4', '.mov', '.mkv']
-    list_zip = ['.zip', '.gz', '.tar']
-    list_other = list_doc + list_image + list_music + list_video + list_zip
-    list_name_folder = ['Documents', 'Images', 'Musics', 'Videos', 'Archives', 'Others']
-
+def run():
     way_console = Path(main())
+    if way_console.is_dir():
+        folder_create(way_console)  # Создаем необходимые папки
+        parsing(way_console)  # Проходимся по папкам
+        folders_dell(way_console)  # Запускаем функцию для удаления пустых папок
+        normalize(way_console)  # Запуск функции по переименовыванию файлов и папок
+        list_of_files(way_console)  # Вывод результата работы
+    else:
+        print('Invalid folder path entered')
+        print('Please enter the correct path!')
 
-    folder_create(way_console)  # Создаем необходимые папки
-    parsing(way_console)  # Проходимся по папкам
-    folders_dell(way_console)  # Запускаем функцию для удаления пустых папок
-    normalize(way_console)  # Запуск функции по переименовыванию файлов и папок
-    list_of_files(way_console)  # Вывод результата работы
-    print('----------------------FINISH---------------------')
+
+if __name__ == '__main__':
+    run()
