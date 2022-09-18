@@ -117,8 +117,8 @@ def list_of_files(way_consoles):
 def main():  # считываем путь к папке с консоли
     try:
         return sys.argv[1]
-    except IndexError:
-        return 'qwerty'
+    except IndexError:  # Ошибку IndexError (аргументы не передали) "переводим" в
+        return 'qwerty'  # неправильный путь и в дальнейшем выводим сообщение что "Введен неверный путь к папке"
 
 
 def new_folders(name_folder, way_consoles):  # Функция создает папки если их нет
