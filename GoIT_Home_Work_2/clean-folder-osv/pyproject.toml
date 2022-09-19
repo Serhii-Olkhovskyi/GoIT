@@ -1,5 +1,5 @@
 [project]
-name = "clean-folder"
+name = "clean-folder-osv"
 version = "1.0.0"
 authors = [
   { name="Sergii Olkhovskyi", email="programing.sergii@gmail.com" },
