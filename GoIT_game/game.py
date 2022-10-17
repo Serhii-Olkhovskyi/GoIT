@@ -1,90 +1,108 @@
 from random import randint, choice
 
-SIZE_X = randint(5, 10)
-SIZE_Y = randint(5, 10)
+SIZE_X = randint(7, 15)
+SIZE_Y = randint(7, 15)
 
 
-def check_state(char_x, char_y, char_sing_def,
-                enemy_x, enemy_y,
-                portal_x, portal_y):
+def check_state(objects_def):
+    for obj in objects_def:
+        if obj['type'] == 'char':
+            char = obj
+        elif obj['type'] == 'portal':
+            portal = obj
+        elif obj['type'] == 'enemy':
+            loss_condition = char['x'] == obj['x'] and char['y'] == obj['y']
+            if loss_condition:
+                char['sing'] = '#'
+                print(f'You LOST in {turns} turns!')
+                break
 
-    win_condition = char_x == portal_x and char_y == portal_y
-    loss_condition = char_x == enemy_x and char_y == enemy_y
+    win_condition = char['x'] == portal['x'] and char['y'] == portal['y']
 
     if win_condition:
-        char_sing_def = 'W'
+        char['sing'] = 'W'
         print(f'You WIN in {turns} turns!')
-    elif loss_condition:
-        char_sing_def = '#'
-        print(f'You LOST in {turns} turns!')
 
-    return char_sing_def, win_condition or loss_condition
+    return win_condition or loss_condition
 
 
-def generate_map(char_x, char_y, char_sing,
-                 enemy_x, enemy_y, enemy_sing,
-                 portal_x, portal_y, portal_sing,
-                 size_x=SIZE_X, size_y=SIZE_Y):
-    world_map_def = ''
+def generate_enemies(count):
+    enemies = []
+    for _ in range(count):
+        enemy = {'x': randint(0, SIZE_X - 1),
+                 'y': randint(0, SIZE_Y - 1),
+                 'sing': '@',
+                 'type': 'enemy'}
+        enemies.append(enemy)
+    return enemies
+
+
+def generate_map(objects, size_x=SIZE_X, size_y=SIZE_Y):
+    world_map = []
+
     for y in range(size_y):
-        row = '|'
+        row = []
+
         for x in range(size_x):
+            row.append(' ')
 
-            if char_x == x and char_y == y:
-                row += f'{char_sing}|'
-            elif enemy_x == x and enemy_y == y:
-                row += f'{enemy_sing}|'
-            elif portal_x == x and portal_y == y:
-                row += f'{portal_sing}|'
-            else:
-                row += ' |'
-        world_map_def += f'{row}\n'
-    return world_map_def
+        world_map.append(row)
+
+    for obj in objects:
+        world_map[obj['y']][obj['x']] = obj['sing']
+
+    return world_map
 
 
-def move(direction, x, y, size_x=SIZE_X, size_y=SIZE_Y):
-    if direction == 'w' and y > 0:
-        y -= 1
-    elif direction == 's' and y < size_y - 1:
-        y += 1
-    elif direction == 'a' and x > 0:
-        x -= 1
-    elif direction == 'd' and x < size_x - 1:
-        x += 1
-    return x, y
+def move(direction, obj, size_x=SIZE_X, size_y=SIZE_Y):
+    if direction == 'w' and obj['y'] > 0:
+        obj['y'] -= 1
+    elif direction == 's' and obj['y'] < size_y - 1:
+        obj['y'] += 1
+    elif direction == 'a' and obj['x'] > 0:
+        obj['x'] -= 1
+    elif direction == 'd' and obj['x'] < size_x - 1:
+        obj['x'] += 1
 
 
-char_x = randint(0, SIZE_X - 1)
-char_y = randint(0, SIZE_Y - 1)
-char_sing = 'X'
+def print_map(world_map_def):
+    for row in world_map_def:
+        print(f'|{"|".join(row)}|')
 
-enemy_x = randint(0, SIZE_X - 1)
-enemy_y = randint(0, SIZE_Y - 1)
-enemy_sing = '@'
 
-portal_x = randint(0, SIZE_X - 1)
-portal_y = randint(0, SIZE_Y - 1)
-portal_sing = 'O'
+char = {'x': randint(0, SIZE_X - 1),
+        'y': randint(0, SIZE_Y - 1),
+        'sing': 'X',
+        'type': 'char'}
+
+portal = {'x': randint(0, SIZE_X - 1),
+          'y': randint(0, SIZE_Y - 1),
+          'sing': 'O',
+          'type': 'portal'}
+
+enemies = generate_enemies(5)
+
+objects = [char, portal] + enemies
 
 turns = 0
 
 while True:
-    char_sing, end_flag = check_state(char_x, char_y, char_sing,
-                            enemy_x, enemy_y,
-                            portal_x, portal_y)
 
-    world_map = generate_map(char_x, char_y, char_sing,
-                             enemy_x, enemy_y, enemy_sing,
-                             portal_x, portal_y, portal_sing)
-
-    print(world_map)
+    end_flag = check_state(objects)
+    world_map = generate_map(objects)
+    print_map(world_map)
 
     if end_flag:
         break
 
-    direction = input('Enter direction (w / s / a / d): ')
-    char_x, char_y = move(direction, char_x, char_y)
-    direction_enemy = choice('wsad')
-    enemy_x, enemy_y = move(direction_enemy, enemy_x, enemy_y)
+    for obj in objects:
+        direction = ''
+        if obj['type'] == 'char':
+            direction = input('Enter direction (w / s / a / d): ')
+
+        elif obj['type'] == 'enemy':
+            direction = choice('wsad')
+
+        move(direction, obj)
 
     turns += 1
