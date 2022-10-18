@@ -1,65 +1,87 @@
 from datetime import datetime, timedelta
 import calendar
-from pprint import pprint
 
 users = [
-    {'MIKAS': '1 November 1980'},
-    {'VALERIYA': '1 November 1980'},
-    {'ADELINA': '30 October 1980'},
-    {'JANET': '28 October 1980'},
-    {'LEO': '26 October 1980'},
-    {'Sergi': '25 October 1980'},
-    {'Karen': '24 October 1980'},
-    {'Oleg': '23 October 1982'},
-    {'Ann': '23 October 1982'},
-    {'Jim': '22 October 1980'},
-    {'Dmitriy': '17 October 1982'},
-    {'VADIM': '15 October 1982'},
+    {"name": 'Jim', "birthday": datetime(year=1982, month=10, day=1)},
+    {"name": 'JANET', "birthday": datetime(year=1981, month=10, day=3)},
+    {"name": 'VALERIYA', "birthday": datetime(year=1980, month=10, day=8)},
+    {"name": 'ADELINA', "birthday": datetime(year=1980, month=10, day=8)},
+    {"name": 'MIKAS', "birthday": datetime(year=1977, month=10, day=23)},
+    {"name": 'Sergi', "birthday": datetime(year=1980, month=10, day=24)},
+    {"name": 'Oleg', "birthday": datetime(year=1990, month=10, day=26)},
+    {"name": 'Ann', "birthday": datetime(year=1982, month=10, day=26)},
+    {"name": 'Karen', "birthday": datetime(year=1988, month=10, day=27)},
+    {"name": 'LEO', "birthday": datetime(year=1980, month=10, day=29)},
+    {"name": 'Dmitriy', "birthday": datetime(year=1985, month=10, day=30)},
+    {"name": 'Marina', "birthday": datetime(year=1985, month=10, day=31)},
+    {"name": 'Danila', "birthday": datetime(year=1985, month=11, day=1)},
+    {"name": 'Leonardo', "birthday": datetime(year=1985, month=11, day=2)},
+    {"name": 'VADIM', "birthday": datetime(year=1975, month=11, day=3)}
 ]
 
-rez_dict = {
+res_dict = {"Monday": [],
+            "Tuesday": [],
+            "Wednesday": [],
+            "Thursday": [],
+            "Friday": []}
 
-}
 
-pprint(users)
+#  функция определяет сегод.дату
+def current_date():
+    current_date_def = datetime.today().date()
+    return current_date_def
 
 
-def get_birthdays_per_week(users):
-
-    def dict_calendar(weak, name):  # Заполняем словарь имениннками
-        rez_dict.setdefault(weak, [])
-        rez_dict[weak].append(name)
-
-    # current_date = datetime.today().date()  # Определяем сегодняшнюю дату
-    current_date = datetime(year=2022, month=10, day=24).date()
-    print('------------------------------')
-    print(f'Сегодня дата: {current_date}')
-    print('------------------------------')
-    current_weak = current_date.isoweekday()  # Определяем сегод день недели
-    day_delta = current_weak + 1
-    day_start = current_date - timedelta(
-        days=day_delta)  # Определяем число с которого будем начинать выводить именниников
-    day_stop = day_start + timedelta(days=6)  # Определяем число до которого будем выводить именниников
-
-    if current_weak == 6 or current_weak == 7:
-        print('Запустите программу в рабочий день.')
+#  функция определяет интервал дат в зависимости от дня недели
+def define_timedelta(today):
+    if today.weekday() == 5:
+        res_timedelta = timedelta(days=6)
+    elif today.weekday() == 6:
+        res_timedelta = timedelta(days=5)
     else:
-        for elem in users:
-            for key, value in elem.items():
-                birthday_data = datetime.strptime(value, '%d %B %Y').date()  # формируем из str дату
-                new_data = datetime(year=current_date.year, month=birthday_data.month, day=birthday_data.day).date()
-                # определяем какие др попадают на эту неделю и прошлые выходные
-                if day_start <= new_data <= day_stop:
-                    if new_data.weekday() == 5 or new_data.weekday() == 6:
-                        a = 0
-                        a = calendar.day_name[a]
-                        dict_calendar(a, key)
-                    else:
-                        a = calendar.day_name[new_data.weekday()]
-                        dict_calendar(a, key)
+        res_timedelta = timedelta(days=7)
+    return res_timedelta
 
-    for key, value in rez_dict.items():  # Выводим результат
-        print(key, ':', value)
+
+def get_birthdays_per_week(users_data):
+    today = current_date()  # Определяем сегодняшнюю дату
+    # today = datetime(year=2022, month=10, day=25).date()
+    days_interval = define_timedelta(today)
+    new_data = today + days_interval
+
+    for user in users_data:
+        if new_data >= new_birthday(user["birthday"]) >= today:
+            weak = weak_birthday(new_birthday(user["birthday"]))
+            weak = week_replacement(weak)
+            res_dict[weak].append(user['name'])
+
+    out_resault(res_dict)
+
+
+#  функция создает дату ДР на сегод.год
+def new_birthday(data):
+    new_data = datetime(year=current_date().year, month=data.month, day=data.day).date()
+    return new_data
+
+
+# функция выводит результат
+def out_resault(data):
+    for key, value in data.items():
+        if value:
+            print(f"{key}: {', '.join(value)}")
+
+
+#  функция определяет в какой день недели ДР
+def weak_birthday(data):
+    birthday_weak = calendar.day_name[data.weekday()]
+    return birthday_weak
+
+
+#  функция меняет выходные дни недели на понедельник
+def week_replacement(data):
+    if data == 'Saturday' or data == 'Sunday':
+        data = 'Monday'
+    return data
 
 
 if __name__ == '__main__':
