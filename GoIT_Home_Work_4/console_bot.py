@@ -8,15 +8,14 @@ input_list = []
 
 
 def input_error(func):
-    def wrapper( *args, **kwags):
+    def wrapper(*args, **kwags):
         try:
-            resault = func( *args, **kwags)
+            resault = func(*args, **kwags)
         except Exception as e:
             print('Input Error. Enter once again.')
         return resault
 
     return wrapper
-
 
 
 @input_error
