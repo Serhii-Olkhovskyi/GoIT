@@ -25,16 +25,16 @@ def add():
     name = input_list[1]
     phone_num = find_phone(input_list)
     name.capitalize()
-    address_book.add_record(Record(Name(name), Phone(phone_num)))
+    address_book.add_record(name, phone_num)
     return 'ok'
 
 
 @input_error
-def change(addressbook=address_book):
+def change():
     name = input_list[1]
     old_number = input_list[2]
     new_number = input_list[-1]
-    addressbook.data[name].change(old_number, new_number)
+    address_book.data[name].update_phone(old_number, new_number)
     return 'ok'
 
 
@@ -81,8 +81,10 @@ def parsing_input(input_elem):  # Разбиваем по пробелам вв�
 
 
 @input_error
-def phone(addressbook=address_book):
-    return addressbook.data[input_list[1]].phones
+def phone():
+    name = input_list[1]
+    address_book.change_number(name)
+
 
 
 @good_bye
