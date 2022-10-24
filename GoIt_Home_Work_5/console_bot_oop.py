@@ -46,8 +46,12 @@ def find_phone(list_input):
 
 
 @input_error
-def func_show_all():
-    return address_book
+def func_show_all(): # Вывод всей адресной книги
+
+    for key, value in address_book.items():
+        print(key, ':', value)
+
+    # return address_book
 
 
 def good_bye(func):
@@ -81,9 +85,9 @@ def parsing_input(input_elem):  # Разбиваем по пробелам вв�
 
 
 @input_error
-def phone():
+def phone(): # Поиск номера по имени
     name = input_list[1]
-    address_book.change_number(name)
+    address_book.find_number(name)
 
 
 
