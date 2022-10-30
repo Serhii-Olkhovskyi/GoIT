@@ -81,6 +81,21 @@ class Phone(Field):
     def __init__(self, value):
         super().__init__(value)
         self.value = value
+    #
+    # @Field.value.setter
+    # def value(self, value):
+    #     self.__value = self.vallide_phone(value)
+    #
+    # @staticmethod
+    # def vallide_phone(phone):
+    #     """
+    #     pass
+    #     """
+    #     if len(phone) != 10 or len(phone) != 13:
+    #         print('Phone must be 10 or 13 characters')
+    #         return False
+    #
+    #     return phone
 
 
 class Record:
