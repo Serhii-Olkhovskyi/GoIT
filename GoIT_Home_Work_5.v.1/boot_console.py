@@ -60,7 +60,7 @@ def add_phone():
     if name in address_book:
         address_book.add_phone(name, new_number)
         return f'phone number {new_number} added. Enter new command.'
-    return f'No contact found in address book.'
+    return f'{name} contact not found in address book.'
 
 
 @input_error
@@ -73,8 +73,8 @@ def change_phone():
     name, old_number, new_number = input_user[1:]
     if name in address_book:
         address_book.change(name, old_number, new_number)
-        return f'Contact changed. Enter new command.'
-    return f'No contact found in address book.'
+        return f'Contact {name} changed: {new_number}. Enter new command.'
+    return f'{name} contact not found in address book.'
 
 
 @input_error
@@ -86,8 +86,8 @@ def dell_phone():
     name, kill_number = input_user[1:]
     if name in address_book:
         address_book.dell_number(name, kill_number)
-        return f'Contact changed. Enter new command.'
-    return f'No contact found in address book.'
+        return f'Contact {name} changed. Enter new command.'
+    return f'{name} contact not found in address book.'
 
 
 def find_phone(list_input):
