@@ -38,7 +38,7 @@ def input_error(func):
 
 
 @input_error
-def add():
+def add_contact():
     """
     Функция добавляет в адресную книгу введенное имя контакта с большой буквы и его номер телефона.
     :return:
@@ -51,16 +51,41 @@ def add():
 
 
 @input_error
-def change():
+def add_phone():
+    """
+    Функция добавляет к существующему контакту еще один номер телефона.
+    :return:
+    """
+    name, new_number = input_user[1:]
+    if name in address_book:
+        address_book.add_phone(name, new_number)
+        return f'phone number {new_number} added. Enter new command.'
+    return f'No contact found in address book.'
+
+
+@input_error
+def change_phone():
     """
     Функция замены номера телефона существующего контакта.
     :return:
     """
 
-    name = input_user[1]
-    phone_number = input_user[2]
+    name, old_number, new_number = input_user[1:]
     if name in address_book:
-        address_book.change(name, phone_number)
+        address_book.change(name, old_number, new_number)
+        return f'Contact changed. Enter new command.'
+    return f'No contact found in address book.'
+
+
+@input_error
+def dell_phone():
+    """
+    Функция удаляет номер телефона у контакта.
+    :return:
+    """
+    name, kill_number = input_user[1:]
+    if name in address_book:
+        address_book.dell_number(name, kill_number)
         return f'Contact changed. Enter new command.'
     return f'No contact found in address book.'
 
@@ -117,13 +142,15 @@ def main():
     global input_user
 
     CONSOLE_COMMANDS = {
-        'add': add,
-        'change': change,
+        'add': add_contact,
+        'add_phone': add_phone,
+        'dell_phone': dell_phone,
+        'change': change_phone,
         'close': quit_func_hendler,
         'exit': quit_func_hendler,
         'good_bye': quit_func_hendler,
         'hello': hello,
-        'phone': phone,
+        'phone': show_phone,
         'show_all': func_show_all
     }
 
@@ -154,7 +181,7 @@ def parsing_input(input_elem):
 
 
 @input_error
-def phone():
+def show_phone():
     """
     Функция поиска номера по имени.
     :return:
