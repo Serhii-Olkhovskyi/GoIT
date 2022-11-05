@@ -19,6 +19,7 @@ def all_commands():
                 ['Show all contacts', 'show_all', '', '', ''],
                 ['Show how many days until birthday', 'show_birthday', 'name', '', ''],
                 ['Show paging output', 'show_page', 'number', '', ''],
+                ['Search by content in a book', 'search', 'text', '', ''],
                 ['Greetings', 'hello', '', '', ''],
                 ['Save contacts and close the program', 'close', '', '', ''],
                 ['Save contacts and close the program', 'exit', '', '', ''],

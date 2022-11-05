@@ -230,6 +230,7 @@ def main():
         'show_all': func_show_all,
         'show_birthday': func_show_birthday,
         'show_page': page,
+        'search': search_matches,
         'hello': hello,
         'close': quit_func_handler,
         'exit': quit_func_handler,
@@ -329,6 +330,26 @@ def parsing_input(input_elem):
         return user_input
     user_input[1] = user_input[1].capitalize()
     return user_input
+
+
+def search_matches():
+    """
+    Функция ищет совпадения по введенным данным
+    :return:
+    """
+    text = input_user[1]
+    resault = []
+    for user in address_book.values():
+        if text in user.name.value:
+            resault.append(user)
+        if text in user.phones.value:
+            resault.append(user)
+    if len(resault) == 0:
+        print('No matches')
+        return message()
+    for i in resault:
+        print(i)
+    return message()
 
 
 @input_error
