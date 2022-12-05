@@ -1,6 +1,7 @@
 def all_commands():
     """
     Функция показывает все возможные команды.
+
     :return: 'Enter new command.'
     """
 
