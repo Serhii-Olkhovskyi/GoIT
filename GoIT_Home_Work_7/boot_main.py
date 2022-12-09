@@ -1,10 +1,18 @@
+import os
 from datetime import datetime
-from boot_class import Record
-from boot_decorator import input_error
+from boot_class import Record, AddressBook
+from boot_decorator import input_error, good_bye
 from boot_help import all_commands
-from boot_load_save import save_address_book, address_book
+
+# from boot_load_save import save_address_book, address_book
 
 input_user = []
+
+if os.path.exists('dump.pickle'):
+    address_book = AddressBook().address_book_load()
+    # load_file.address_book_load()
+else:
+    address_book = AddressBook()
 
 
 @input_error
@@ -136,6 +144,20 @@ def dell_phone():
     return message()
 
 
+@good_bye
+def exit_program():
+    """
+    Функция завершает программу.
+
+    Параметры
+    ---------
+    :param:
+    :return:
+    """
+
+    AddressBook().address_book_save(address_book)
+
+
 def message(inline_value=None, key_message=None):
     """
     Функция выводит строковое результирующее сообщение
@@ -231,13 +253,14 @@ def main():
         'show_page': page,
         'search': search_matches,
         'hello': hello,
-        'close': save_address_book,
-        'exit': save_address_book,
-        'good_bye': save_address_book,
+        'close': exit_program,
+        'exit': exit_program,
+        'good_bye': exit_program,
         'help': all_commands
     }
 
     while True:
+
         print('-' * 20)
         print('Тo display all commands on the screen type: help')
         input_user = input('input command: ')

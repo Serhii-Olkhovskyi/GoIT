@@ -8,8 +8,12 @@
     Record - отвечает за логику добавления/удаления/редактирования необязательных полей
     и хранения обязательного поля Name
 """
+
+import pickle
+import sys
 from collections import UserDict
 from datetime import datetime
+from boot_decorator import good_bye
 
 
 class AddressBook(UserDict):
@@ -22,6 +26,35 @@ class AddressBook(UserDict):
     :return:
     """
 
+    def address_book_load(self):
+        """
+        Функция загружает адресную книгу при старте.
+
+        Параметры
+        ---------
+        :param:
+        :return:
+        """
+
+        with open('dump.pickle', 'rb') as dump_file:
+            archive_book = pickle.load(dump_file)
+            return archive_book
+
+    def address_book_save(self, archive_book):
+        """
+        Функция сохраняет адресную книгу и завершает программу.
+
+        Параметры
+        ---------
+        :param:
+        :return:
+        """
+
+        with open('dump.pickle', 'wb') as dump_file:
+            pickle.dump(archive_book, dump_file)
+
+        sys.exit()
+
     def add_record(self, record):
         """
         Добавление контакта в адресную книгу
@@ -33,31 +66,6 @@ class AddressBook(UserDict):
         """
 
         self.data[record.name.value] = record
-
-    def iterator(self):
-        """
-        Пагинация (постраничный вывод)
-
-        Параметры
-        ---------
-        :param: int: entry - кол-во записей за раз
-        :return:
-        """
-
-        for record in self.data.values():
-            yield record
-
-    def find_name(self, name):
-        """
-          Возвращает запись с искомым именем.
-
-          Параметры
-          ---------
-          :param: name - искомое имя
-          :return:
-          """
-
-        return self.data.get(name)
 
     def find_input(self, value):
         """
@@ -88,6 +96,31 @@ class AddressBook(UserDict):
             return find_list_class
 
         raise ValueError('No matches found')
+
+    def find_name(self, name):
+        """
+          Возвращает запись с искомым именем.
+
+          Параметры
+          ---------
+          :param: name - искомое имя
+          :return:
+          """
+
+        return self.data.get(name)
+
+    def iterator(self):
+        """
+        Пагинация (постраничный вывод)
+
+        Параметры
+        ---------
+        :param: int: entry - кол-во записей за раз
+        :return:
+        """
+
+        for record in self.data.values():
+            yield record
 
 
 class Field:  # pylint: disable=too-few-public-methods
@@ -225,6 +258,19 @@ class Record:
 
         self.birthday = Birthday(day)
 
+    def change(self, old_number, new_number):
+        """
+        Метод для редактирования объектов Phone
+
+        Параметры
+        ---------
+        :param:
+        :return:
+        """
+
+        self.phone_remove(old_number)
+        self.phone_add(new_number)
+
     def days_to_birthday(self):
         """
         Метод высчитывает количество дней до следующего дня рождения.
@@ -246,18 +292,20 @@ class Record:
             return difference.days
         return 365 + int(difference.days)
 
-    def change(self, old_number, new_number):
+    def find_phone(self, element):
         """
-        Метод для редактирования объектов Phone
+        Метод для поиска совпадений по номерам телефонов
 
         Параметры
         ---------
-        :param:
+        :param: str: element - искомый номер телефона
         :return:
         """
 
-        self.phone_remove(old_number)
-        self.phone_add(new_number)
+        for phone in self.phones:
+            if phone.value == element:
+                return phone
+        raise ValueError(f'No matches {element}')
 
     @property
     def get_user_details(self):
@@ -294,21 +342,6 @@ class Record:
 
         self.phones.append(Phone(number))
 
-    def find_phone(self, element):
-        """
-        Метод для поиска совпадений по номерам телефонов
-
-        Параметры
-        ---------
-        :param: str: element - искомый номер телефона
-        :return:
-        """
-
-        for phone in self.phones:
-            if phone.value == element:
-                return phone
-        raise ValueError(f'No matches {element}')
-
     def phone_remove(self, number):
         """
         Метод для удаления записи в phones
@@ -324,3 +357,6 @@ class Record:
 
     def __str__(self):
         return self.get_user_details
+
+
+address_book = AddressBook()
